@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -24,38 +25,31 @@ public class DataController {
     }
     @GetMapping("/textall")
     public ResponseEntity<HashMap<String, String>> getTextAll() {
-        HashMap<String, String> texts = dataBaseModel.getTextAll();
-        if (texts != null && !texts.isEmpty()) {
-            return ResponseEntity.ok(texts);
+        Optional<HashMap<String, String>> texts = dataBaseModel.getTextAll();
+        if (texts.isPresent() && !texts.get().isEmpty()) {
+            return ResponseEntity.ok(texts.get());
         }
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/text/{id}")
     public ResponseEntity<String> getText(@PathVariable("id") String id) {
-        String text = dataBaseModel.getText(id);
-        if (text != null) {
-            return ResponseEntity.ok(text);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<String> text = dataBaseModel.getText(id);
+        return text.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/text/{id}")
     public ResponseEntity<String> postText(@PathVariable("id") String id, @RequestBody String data) {
-        boolean isSaved = dataBaseModel.putText(id, data);
-        if (isSaved) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Save successfully");
-        }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Error occurred");
+        Optional<String> message = dataBaseModel.putText(id, data);
+        return message.map(m -> ResponseEntity.status(HttpStatus.CREATED).body(m))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Error occurred"));
     }
 
     @DeleteMapping("/text/{id}")
     public ResponseEntity<String> deleteText(@PathVariable("id") String id) {
-        boolean isDeleted = dataBaseModel.deleteText(id);
-        if (isDeleted) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Delete Successfully");
-        }
-        return ResponseEntity.notFound().build();
+        Optional<String> message = dataBaseModel.deleteText(id);
+        return message.map(m -> ResponseEntity.status(HttpStatus.ACCEPTED).body(m))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_EXTENDED).build());
     }
 
 }

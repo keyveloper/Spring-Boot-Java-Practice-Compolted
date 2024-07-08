@@ -4,158 +4,129 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Optional;
 
 @Getter
 @Repository
 @Slf4j
 public class DataBaseModel {
-    private Connection connection;
-    private final Object dataBaseLock = new Object();
-    private final String url = "jdbc:mariadb://localhost:3306/http";
-    private final String user = "root";
-    private final String password = "3353";
+    private HikariDataSource dataSource;
 
     @PostConstruct
     public void startConnection() {
-        log.info("start connection!!");
-        try {
-            this.connection = DriverManager.getConnection(url, user, password);
-            log.info("connecting success");
+        log.info("Starting database connection with HikariCP");
+
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:mariadb://localhost:3306/http");
+        hikariConfig.setUsername("root");
+        hikariConfig.setPassword("3353");
+        hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setMinimumIdle(10);
+        hikariConfig.setConnectionTimeout(20000);
+        hikariConfig.setIdleTimeout(300000);
+        hikariConfig.setMaxLifetime(600000);
+
+        this.dataSource = new HikariDataSource(hikariConfig);
+
+        try (Connection connection = dataSource.getConnection()) {
+            log.info("Database connection established successfully");
         } catch (SQLException e) {
-            log.error("<<DataBaseManger>>\n - sql err: " + e.getMessage() + "\n");
+            log.error("Failed to establish database connection: " + e.getMessage());
         }
     }
-    public boolean putText(String key, String value) {
-        String sql = "INSERT INTO texts (text_id, text_value) VALUES (?, ?)";
+    public Optional<String> putText(String key, String value) {
+        String sql = "INSERT INTO texts (text_id, text_value) VALUES ?, ?";
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, key);
             preparedStatement.setString(2, value);
 
-            int effectedRows = preparedStatement.executeUpdate();
-            preparedStatement.close();
+            int affectedRows = preparedStatement.executeUpdate();
 
-            if (effectedRows > 0) {
+            // Check if any rows were affected.
+            if (affectedRows > 0) {
                 log.info("A new row has been inserted successfully.");
-                return true;
+                return Optional.of("insertion successful");  // Return true if the insertion was successful.
             } else {
                 log.error("A new row insertion failed");
-                return false;
+                return Optional.empty();  // Return false if the insertion failed.
             }
         } catch (SQLException e) {
             log.error("DataBase Manger: putText err: " + e.getMessage());
-            return false;
+            return Optional.empty();
         }
     }
 
-    public boolean putImage(byte[] bytes) {
-        String sql = "INSERT INTO images (img_bytes) values (?)";
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setBytes(1, bytes);
+    public Optional<String> getText(String key) {
+        String sql = "SELECT text_value FROM texts WHERE text_id = ?";
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows > 0) {
-                log.info("Image successfully inserted.");
-                return true;
-            } else {
-                log.info("No rows affected.");
-                return false;
-            }
-        } catch (SQLException e) {
-            log.error("Database Manager: putImage error: " + e.getMessage());
-        }
-        return false;
-    }
-
-    public byte[] getImage(int key) {
-        String sql = "SELECT img_bytes FROM images WHERE img_num = (?)";
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, key);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
-            if (resultSet.next()) {
-                return resultSet.getBytes("img_bytes");
-            }
-            resultSet.close();
-            return null;
-        } catch (SQLException e) {
-            System.out.println("DataBase Manger: getImage err: " + e.getMessage());
-        }
-        return  null;
-    }
-
-    public String getText(String key) {
-        String sql = "SELECT text_value FROM texts WHERE text_id = (?)";
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()){
             preparedStatement.setString(1, key);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
-
             if (resultSet.next()) {
-                return resultSet.getString("text_value");
+                return Optional.of(resultSet.getString(1));
             }
-            resultSet.close();
-
         } catch (SQLException e) {
             log.error("DataBase Manger: getText err: " + e.getMessage());
+            return Optional.empty();
         }
-        return null;
+        return Optional.empty();
     }
 
-    public HashMap<String, String> getTextAll() {
+    public Optional<HashMap<String, String>> getTextAll() {
         // return Json
         String sql = "SELECT * FROM texts";
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()){
 
             HashMap<String, String > results = new HashMap<>();
             while (resultSet.next()) {
-                String key = resultSet.getString("text_id");
-                String value = resultSet.getString("text_value");
+                String key = resultSet.getString(1);
+                String value = resultSet.getString(2);
                 results.put(key, value);
             }
 
-            return results;
+            if (results.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(results);
+            }
         } catch (SQLException e) {
             log.error("Database Manager: getTextAll error: " + e.getMessage());
+            return Optional.empty();
         }
-        return null;
     }
 
 
-    public boolean deleteText(String key) {
+    public Optional<String> deleteText(String key) {
         String sql = "DELETE FROM texts WHERE text_id = (?)";
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             preparedStatement.setString(1, key);
 
             int effectedRows = preparedStatement.executeUpdate();
-            preparedStatement.close();
             if (effectedRows > 0) {
                 log.info("key: " + key + " row was deleted!");
-                return true;
+                return Optional.of("key: " + key + " row was deleted!");
             } else {
                 log.info("delete failed");
-                return false;
+                return Optional.empty();
             }
         } catch (SQLException e) {
             log.error("DataBase Manger: deleteText err: " + e.getMessage());
+            return Optional.empty();
         }
-        return false;
     }
 }
