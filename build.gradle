@@ -34,6 +34,9 @@ dependencies {
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
+    implementation 'org.hibernate:hibernate-core:5.4.18.Final'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    runtimeOnly 'com.h2database:h2:1.4.200'
 }
 
 tasks.named('test') {
