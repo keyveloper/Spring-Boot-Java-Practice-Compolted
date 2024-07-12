@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.*;
-import java.sql.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -14,17 +14,17 @@ import java.util.Optional;
 @Repository
 @Slf4j
 public class DataBaseModel {
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("myPU");
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public Optional<String> putText(String key, String value) {
-        try(EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+        try {
             TextEntity textEntity = new TextEntity();
             textEntity.setTextId(key);
             textEntity.setTextValue(value);
             entityManager.getTransaction().begin();
             entityManager.persist(textEntity);
             entityManager.getTransaction().commit();
-
             return Optional.of("Insertion successful");
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -33,7 +33,7 @@ public class DataBaseModel {
     }
 
     public Optional<String> getText(String key) {
-        try(EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+        try{
             TextEntity textEntity = entityManager
                     .createQuery("SELECT t FROM TextEntity t Where t.textId = :key", TextEntity.class)
                     .setParameter("key", key)
@@ -49,7 +49,7 @@ public class DataBaseModel {
         // return Json
         String sql = "SELECT * FROM texts";
 
-        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+        try {
             List<TextEntity> textEntities = entityManager
                     .createQuery("SELECT t From TextEntity t", TextEntity.class)
                     .getResultList();
@@ -63,12 +63,15 @@ public class DataBaseModel {
             }
 
             return Optional.of(textMap);
+        } catch (Exception e) {
+            log.error("get TextAll result error" + e.getMessage());
+            return Optional.empty();
         }
     }
 
 
     public Optional<String> deleteText(String key) {
-        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+        try {
             entityManager.getTransaction().begin();
             TextEntity textEntity = entityManager
                     .createQuery("SELECT t From TextEntity t Where t.textId = :textId", TextEntity.class)
