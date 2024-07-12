@@ -15,6 +15,6 @@ public class TextEntity {
     @Column(name = "text_id", nullable = false)
     private String textId;
 
-    @Column(name = "text_vale", nullable = false)
+    @Column(name = "text_value", nullable = false)
     private String textValue;
 }

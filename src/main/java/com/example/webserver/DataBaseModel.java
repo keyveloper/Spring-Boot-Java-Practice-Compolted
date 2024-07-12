@@ -1,5 +1,6 @@
 package com.example.webserver;
 
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -17,14 +18,13 @@ public class DataBaseModel {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public Optional<String> putText(String key, String value) {
         try {
             TextEntity textEntity = new TextEntity();
             textEntity.setTextId(key);
             textEntity.setTextValue(value);
-            entityManager.getTransaction().begin();
             entityManager.persist(textEntity);
-            entityManager.getTransaction().commit();
             return Optional.of("Insertion successful");
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -70,15 +70,14 @@ public class DataBaseModel {
     }
 
 
+    @Transactional
     public Optional<String> deleteText(String key) {
         try {
-            entityManager.getTransaction().begin();
             TextEntity textEntity = entityManager
                     .createQuery("SELECT t From TextEntity t Where t.textId = :textId", TextEntity.class)
                     .setParameter("textId", key)
                     .getSingleResult();
             entityManager.remove(textEntity);
-            entityManager.getTransaction().commit();
             return Optional.of("Key: " + key + " row was deleted!");
         } catch (Exception e) {
             // EntityManager 자체가 닫히면 모든 열려 있는 트랜잭션은 자동 롤백된다.
