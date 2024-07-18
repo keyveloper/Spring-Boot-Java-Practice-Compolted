@@ -15,5 +15,4 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DataController {
 
-
 }
