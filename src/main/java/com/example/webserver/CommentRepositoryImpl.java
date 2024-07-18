@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.stream.events.Comment;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Slf4j
+@Repository
 public class CommentRepositoryImpl implements CommentRepository {
     private final EntityManager entityManager;
 
