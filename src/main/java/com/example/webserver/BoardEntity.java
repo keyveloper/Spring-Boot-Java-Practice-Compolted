@@ -27,7 +27,7 @@ public class BoardEntity {
     private LocalDateTime boardDate;
 
     @Column(name = "board_count")
-    private long boardCount;
+    private Integer boardCount;
 
     @Column(name = "board_content")
     private String boardContent;

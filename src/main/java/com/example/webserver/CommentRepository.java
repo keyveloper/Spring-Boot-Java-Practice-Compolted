@@ -1,4 +1,4 @@
 package com.example.webserver;
 
-public class CommentRepository {
+public interface CommentRepository {
 }
