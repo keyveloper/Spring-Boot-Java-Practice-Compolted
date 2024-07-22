@@ -36,7 +36,7 @@ public class BoardRepositoryImpl implements BoardRepository{
 
     @Override
     @Transactional
-    public Optional<String> write(String writer, String content) {
+    public Optional<Long> put(String writer, String content) {
         try {
             BoardEntity board = new BoardEntity();
             board.setBoardWriter(writer);
@@ -45,13 +45,11 @@ public class BoardRepositoryImpl implements BoardRepository{
             board.setBoardCount(0);
 
             entityManager.persist(board);
-            return Optional.of("Board Created and Saved Successfully" + board.getBoardId());
+            return Optional.of(board.getBoardId());
         } catch (Exception e) {
             log.error("BoardRepositoryImpl write error: " + e.getMessage());
             return Optional.empty();
         }
-
-
     }
 
     @Override

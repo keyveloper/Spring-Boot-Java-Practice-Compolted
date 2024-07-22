@@ -20,15 +20,15 @@ public class BoardEntity {
     @OneToMany(mappedBy = "board")
     private List<CommentEntity> comments;
 
-    @Column(name = "board_writer")
+    @Column(name = "board_writer", nullable = false)
     private String boardWriter;
 
-    @Column(name = "board_date")
+    @Column(name = "board_date", nullable = false)
     private LocalDateTime boardDate;
 
-    @Column(name = "board_count")
+    @Column(name = "board_count", nullable = false)
     private Integer boardCount;
 
-    @Column(name = "board_content")
+    @Column(name = "board_content", nullable = false)
     private String boardContent;
 }
