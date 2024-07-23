@@ -2,15 +2,10 @@ package com.example.webserver;
 
 import lombok.AllArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +25,14 @@ public class DataController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/board/{id}")
+    public ResponseEntity<BoardEntity> getBoard(@PathVariable("id") Long id) {
+        Optional<BoardEntity> result = boardRepositoryImpl.get(id);
+        return result
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/board")
     public ResponseEntity<Object> postBoard(@RequestBody BoardRequest boardRequest) {
 
@@ -39,7 +42,11 @@ public class DataController {
                 .orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 
-
-
-
+    @DeleteMapping("/board/{id}")
+    public ResponseEntity<String> deleteBoard(@PathVariable("id") Long id) {
+        Optional<String> result = boardRepositoryImpl.delete(id);
+        return result
+                .map(msg -> ResponseEntity.accepted().body(msg))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
