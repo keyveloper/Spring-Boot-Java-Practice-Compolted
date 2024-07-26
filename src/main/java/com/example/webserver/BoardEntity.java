@@ -17,8 +17,8 @@ public class BoardEntity {
     @Column(name="board_id")
     private long boardId;
 
-    @OneToMany(mappedBy = "board")
-    private List<CommentEntity> comments;
+    @Column(name = "board_title", nullable = false)
+    private String boardTitle;
 
     @Column(name = "board_writer", nullable = false)
     private String boardWriter;
@@ -31,4 +31,7 @@ public class BoardEntity {
 
     @Column(name = "board_content", nullable = false)
     private String boardContent;
+
+    @OneToMany(mappedBy = "board")
+    private List<CommentEntity> comments;
 }

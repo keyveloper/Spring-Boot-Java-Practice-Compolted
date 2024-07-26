@@ -2,6 +2,7 @@ package com.example.webserver;
 
 import lombok.AllArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 public class DataController {
@@ -34,9 +36,11 @@ public class DataController {
     }
 
     @PostMapping("/board")
-    public ResponseEntity<Object> postBoard(@RequestBody BoardRequest boardRequest) {
-
-        Optional<Long> resultId = boardRepositoryImpl.put(boardRequest.getWriter(), boardRequest.getContent());
+    public ResponseEntity<Object> postBoard(@RequestBody BoardPostRequest postRequest) {
+        log.info("\ntitle: " + postRequest.getTitle() + "\nwriter: " + postRequest.getWriter()
+                + "\ncontent: " + postRequest.getContent());
+        Optional<Long> resultId = boardRepositoryImpl
+                .put(postRequest.getTitle(), postRequest.getWriter(), postRequest.getContent());
         return resultId
                 .map(id -> ResponseEntity.created(URI.create("http://localhost:8080/board/" + id)).build())
                 .orElseGet(() -> ResponseEntity.internalServerError().build());

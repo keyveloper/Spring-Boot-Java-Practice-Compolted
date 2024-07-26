@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface BoardRepository {
     Optional<List<BoardEntity>> getAllBoard();
-    Optional<Long> put(String writer, String content);
+    Optional<Long> put(String title, String writer, String content);
     Optional<BoardEntity> get(long id);
     Optional<String> delete(long id);
     Optional<String> update(long id, String content);

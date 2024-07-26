@@ -36,9 +36,11 @@ public class BoardRepositoryImpl implements BoardRepository{
 
     @Override
     @Transactional
-    public Optional<Long> put(String writer, String content) {
+    public Optional<Long> put(String title, String writer, String content) {
+        log.info("title: " + title + "\nwriter: " + writer + "\ncontent: "+ content + "\n");
         try {
             BoardEntity board = new BoardEntity();
+            board.setBoardTitle(title);
             board.setBoardWriter(writer);
             board.setBoardContent(content);
             board.setBoardDate(LocalDateTime.now());
