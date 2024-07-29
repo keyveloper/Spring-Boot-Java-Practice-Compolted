@@ -32,6 +32,6 @@ public class BoardEntity {
     @Column(name = "board_content", nullable = false)
     private String boardContent;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<CommentEntity> comments;
 }

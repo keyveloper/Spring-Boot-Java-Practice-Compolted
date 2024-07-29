@@ -1,17 +1,10 @@
 package com.example.webserver;
 
-import java.util.ArrayList;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface BoardRepository {
-    Optional<List<BoardEntity>> getAllBoard();
-    Optional<Long> put(String title, String writer, String content);
-    Optional<BoardEntity> get(long id);
-    Optional<String> delete(long id);
-    Optional<String> update(long id, String content);
-    Optional<String> addCount(long id);
-
-    Optional<List<CommentEntity>> getAllComment(long id);
-
+@Repository
+public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
 }

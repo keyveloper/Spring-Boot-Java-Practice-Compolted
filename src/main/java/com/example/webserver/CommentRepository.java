@@ -1,12 +1,11 @@
 package com.example.webserver;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface CommentRepository {
-    Optional<List<CommentEntity>> getAllComment();
-
-    Optional<String> write(String writer, String content);
-
-    Optional<String> delete(long id);
+@Repository
+public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
+    List<CommentEntity> findByBoardBoardId(long bardId);
 }
