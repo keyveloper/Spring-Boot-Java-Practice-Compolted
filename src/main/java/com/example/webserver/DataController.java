@@ -14,7 +14,6 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 public class DataController {
-    private final BoardRepositoryImpl boardRepository;
     private final CommentRepositoryImpl commentRepository;
     private final BoardRepositoryImpl boardRepositoryImpl;
 
@@ -52,5 +51,10 @@ public class DataController {
         return result
                 .map(msg -> ResponseEntity.accepted().body(msg))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/commentAll/{boardId}")
+    public ResponseEntity<List<BoardEntity>> getAllComment(@PathVariable Long boardId) {
+        return null;
     }
 }
