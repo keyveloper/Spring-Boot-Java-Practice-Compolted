@@ -14,24 +14,24 @@ import java.util.List;
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="board_id")
+    @Column(name="id")
     private long boardId;
 
-    @Column(name = "board_title", nullable = false)
+    @Column(name = "title", nullable = false)
     private String boardTitle;
 
-    @Column(name = "board_writer", nullable = false)
+    @Column(name = "writer", nullable = false)
     private String boardWriter;
 
-    @Column(name = "board_date", nullable = false)
-    private LocalDateTime boardDate;
+    @Column(name = "writing_time", nullable = false)
+    private LocalDateTime boardWritingDate;
 
-    @Column(name = "board_count", nullable = false)
-    private Integer boardCount;
+    @Column(name = "reading_count", nullable = false)
+    private Integer boardReadingCount;
 
-    @Column(name = "board_content", nullable = false)
-    private String boardContent;
+    @Column(name = "text_content", nullable = false)
+    private String boardTextContent;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<CommentEntity> comments;
+    private List<CommentEntity> boardComments;
 }

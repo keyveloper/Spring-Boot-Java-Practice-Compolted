@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CommentPostRequest {
-    Integer boardID;
+    long boardId;
     String writer;
-    String content;
+    String textContent;
 }

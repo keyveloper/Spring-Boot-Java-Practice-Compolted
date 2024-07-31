@@ -1,7 +1,10 @@
 package com.example.webserver;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -10,22 +13,25 @@ import java.time.LocalDateTime;
 @Slf4j
 @Table(name = "comments")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="comment_id")
+    @Column(name="id")
     private long commentId;
 
     @ManyToOne
-    @JoinColumn(name="comment_board_id")
+    @JoinColumn(name="board_id")
     private BoardEntity board;
 
-    @Column(name="comment_writer")
+    @Column(name="writer")
     private String commentWriter;
 
-    @Column(name="comment_date")
-    private LocalDateTime commentDate;
+    @Column(name="writing_time")
+    private LocalDateTime commentWritingTime;
 
-    @Column(name="comment_content")
-    private String commentContent;
+    @Column(name="text_content")
+    private String commentTextContent;
 }
