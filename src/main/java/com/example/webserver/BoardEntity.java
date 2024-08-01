@@ -1,7 +1,11 @@
 package com.example.webserver;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -11,6 +15,9 @@ import java.util.List;
 @Slf4j
 @Entity
 @Table(name = "boards")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +40,6 @@ public class BoardEntity {
     private String boardTextContent;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CommentEntity> boardComments;
 }

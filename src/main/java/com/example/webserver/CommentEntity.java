@@ -1,5 +1,6 @@
 package com.example.webserver;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class CommentEntity {
 
     @ManyToOne
     @JoinColumn(name="board_id")
+    @JsonBackReference
     private BoardEntity board;
 
     @Column(name="writer")

@@ -19,13 +19,13 @@ public class BulletinService {
         return boards.isEmpty() ? Optional.empty() : Optional.of(boards);
     }
 
-    public Optional<Long> putBoard(String title, String writer, String content) {
-        BoardEntity board = new BoardEntity();
-        board.setBoardTitle(title);
-        board.setBoardWriter(writer);
-        board.setBoardTextContent(content);
-        board.setBoardWritingDate(LocalDateTime.now());
-        board.setBoardReadingCount(0);
+    public Optional<Long> putBoard(String title, String writer, String textContent) {
+        BoardEntity board = BoardEntity.builder()
+                .boardTitle(title).boardWriter(writer)
+                .boardTextContent(textContent)
+                .boardWritingDate(LocalDateTime.now())
+                .boardReadingCount(0)
+                .build();
         boardRepository.save(board);
         return Optional.of(board.getBoardId());
     }
