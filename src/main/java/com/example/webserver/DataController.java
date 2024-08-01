@@ -32,7 +32,7 @@ public class DataController {
     }
 
     @PostMapping("/board")
-    public ResponseEntity<Object> postBoard(@RequestBody BoardPostRequest request) {
+    public ResponseEntity<Object> postBoard(@RequestBody RequestBoard request) {
         return bulletinService.putBoard(request.getTitle(), request.getWriter(), request.getContent())
                 .map(id -> ResponseEntity.created(URI.create("http://localhost:8080/board/" + id)).build())
                 .orElseGet(() -> ResponseEntity.internalServerError().build());
@@ -60,7 +60,8 @@ public class DataController {
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<CommentResponse> postComment(@RequestBody CommentPostRequest request) {
+    public ResponseEntity<CommentResponse> postComment(@RequestBody RequestComment request) {
+        log.info("request: {}", request);
         return bulletinService.putComment(request.getBoardId(), request.getWriter(), request.getTextContent())
                 .map(response -> ResponseEntity.created(URI.create("http://localhost:8080/comment/"
                         + response.getCommentEntity().getCommentId())).body(response))
