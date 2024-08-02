@@ -29,11 +29,11 @@ public class CommentEntity {
     private BoardEntity board;
 
     @Column(name="writer")
-    private String commentWriter;
+    private String writer;
 
     @Column(name="writing_time")
-    private LocalDateTime commentWritingTime;
+    private LocalDateTime writingTime;
 
     @Column(name="text_content")
-    private String commentTextContent;
+    private String textContent;
 }
