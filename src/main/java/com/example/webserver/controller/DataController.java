@@ -1,15 +1,19 @@
-package com.example.webserver;
+package com.example.webserver.controller;
 
+import com.example.webserver.dto.RequestBoard;
+import com.example.webserver.dto.RequestComment;
+import com.example.webserver.dto.CommentResponse;
+import com.example.webserver.entity.BoardEntity;
+import com.example.webserver.entity.CommentEntity;
+import com.example.webserver.service.BulletinService;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.stream.events.Comment;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController

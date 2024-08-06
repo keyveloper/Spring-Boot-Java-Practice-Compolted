@@ -1,5 +1,10 @@
-package com.example.webserver;
+package com.example.webserver.service;
 
+import com.example.webserver.dto.CommentResponse;
+import com.example.webserver.entity.BoardEntity;
+import com.example.webserver.entity.CommentEntity;
+import com.example.webserver.repository.BoardRepository;
+import com.example.webserver.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
