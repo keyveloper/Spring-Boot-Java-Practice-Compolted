@@ -22,7 +22,7 @@ public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private long boardId;
+    private long id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -31,7 +31,7 @@ public class BoardEntity {
     private String writer;
 
     @Column(name = "writing_time", nullable = false)
-    private LocalDateTime writingDate;
+    private LocalDateTime writingTime;
 
     @Column(name = "reading_count", nullable = false)
     private Integer readingCount;

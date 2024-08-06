@@ -21,7 +21,7 @@ public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private long commentId;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name="board_id")
