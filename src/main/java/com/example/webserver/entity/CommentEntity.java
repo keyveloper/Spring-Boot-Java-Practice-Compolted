@@ -2,10 +2,7 @@ package com.example.webserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -26,6 +23,7 @@ public class CommentEntity {
     @ManyToOne
     @JoinColumn(name="board_id")
     @JsonBackReference
+    @ToString.Exclude
     private BoardEntity board;
 
     @Column(name="writer")

@@ -2,10 +2,7 @@ package com.example.webserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -39,7 +36,8 @@ public class BoardEntity {
     @Column(name = "text_content", nullable = false)
     private String textContent;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL,
+    fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<CommentEntity> comments;
 }
