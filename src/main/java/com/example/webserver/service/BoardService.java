@@ -1,5 +1,6 @@
 package com.example.webserver.service;
 
+import com.example.webserver.dto.GetBoardResultDto;
 import com.example.webserver.dto.PostBoardResultDto;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.enums.PostBoardStatus;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,4 +90,91 @@ public class BoardService {
         }
     }
 
+    public Optional<List<GetBoardResultDto>> findBoardByContaining(String writer, String textContent) {
+        if (writer != null && textContent != null) {
+            List<GetBoardResultDto> boardDtos = boardRepository.findByContainingWriterAndText(writer, textContent)
+                    .stream()
+                    .map(this::convertResultDto)
+                    .collect(Collectors.toList());
+
+            if (boardDtos.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(boardDtos);
+        } else if (writer != null) {
+            List<GetBoardResultDto> boardDtos = boardRepository.findByContainingWriter(writer)
+                    .stream()
+                    .map(this::convertResultDto)
+                    .collect(Collectors.toList());
+
+            if (boardDtos.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(boardDtos);
+        } else if (textContent != null){
+            List<GetBoardResultDto> boardDtos = boardRepository.findByContainingTextContent(textContent)
+                    .stream()
+                    .map(this::convertResultDto)
+                    .collect(Collectors.toList());
+
+            if (boardDtos.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(boardDtos);
+
+        }
+        return Optional.empty();
+    }
+
+
+    public Optional<List<GetBoardResultDto>> findBoardByContainingComment(String writer, String textContent) {
+        if (writer != null && textContent != null) {
+            List<GetBoardResultDto> boardDtos = boardRepository
+                    .findByContainingCommentWriterAndText(writer, textContent)
+                    .stream()
+                    .map(this::convertResultDto)
+                    .collect(Collectors.toList());
+
+            if (boardDtos.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(boardDtos);
+        } else if (writer != null) {
+            List<GetBoardResultDto> boardDtos = boardRepository
+                    .findByContainingCommentWriter(writer)
+                    .stream()
+                    .map(this::convertResultDto)
+                    .collect(Collectors.toList());
+
+            if (boardDtos.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(boardDtos);
+        } else if (textContent != null){
+            List<GetBoardResultDto> boardDtos = boardRepository
+                    .findByContainingCommentContent(textContent)
+                    .stream()
+                    .map(this::convertResultDto)
+                    .collect(Collectors.toList());
+
+            if (boardDtos.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(boardDtos);
+
+        }
+        return Optional.empty();
+    }
+
+    private GetBoardResultDto convertResultDto(BoardEntity board) {
+        return GetBoardResultDto.builder()
+                .id(board.getId())
+                .writer(board.getWriter())
+                .title(board.getTitle())
+                .readingCount(board.getReadingCount())
+                .comments(board.getComments())
+                .writingTime(board.getWritingTime())
+                .textContent(board.getTextContent())
+                .build();
+    }
 }

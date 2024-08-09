@@ -10,8 +10,12 @@ public interface BoardCriteriaRepository {
     List<BoardEntity> findByContainingWriter(String writer);
     // find by board textContent
     List<BoardEntity> findByContainingTextContent(String textContent);
+    // find by both
+    List<BoardEntity> findByContainingWriterAndText(String writer, String textContent);
     // find by comment writer name
     List<BoardEntity> findByContainingCommentWriter(String writer);
     // find by comment writer content
     List<BoardEntity> findByContainingCommentContent(String textContent);
+    // find by containing comment both
+    List<BoardEntity> findByContainingCommentWriterAndText(String writer, String textContent);
 }

@@ -1,12 +1,9 @@
 package com.example.webserver.controller;
 
-import com.example.webserver.dto.PostBoardRequestDto;
-import com.example.webserver.dto.PostBoardResponseDto;
-import com.example.webserver.dto.PostBoardResultDto;
+import com.example.webserver.dto.*;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.enums.PostBoardStatus;
 import com.example.webserver.service.BoardService;
-import com.example.webserver.service.CommentService;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @AllArgsConstructor
 public class BoardController {
     private final BoardService boardService;
-    private final CommentService commentService;
 
     @GetMapping("/boardAll")
     public ResponseEntity<List<BoardEntity>> getAllBoardEntity() {
@@ -71,5 +68,44 @@ public class BoardController {
         return boardService.deleteBoard(id)
                 .map(msg -> ResponseEntity.accepted().body(msg))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/board/contain-board")
+    public ResponseEntity<List<GetBoardResponseDto>> getBoardContainWriter(
+            @PathVariable("writer") String writer,
+            @PathVariable("textContent") String textContent) {
+        return boardService.findBoardByContaining(writer, textContent)
+                .map(resultDtos -> resultDtos.stream()
+                        .map(this::convertToResponseDto)
+                        .collect(Collectors.toList()))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/board/contain-comment")
+    public ResponseEntity<List<GetBoardResponseDto>> geBoardContainComment(
+            @PathVariable("writer") String writer,
+            @PathVariable("textContent") String content) {
+        return boardService.findBoardByContainingComment(writer, content)
+                .map(resultDtos -> resultDtos.stream()
+                        .map(this::convertToResponseDto)
+                        .collect(Collectors.toList()))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+
+    @GetMapping()
+    private GetBoardResponseDto convertToResponseDto(GetBoardResultDto resultDto) {
+        return GetBoardResponseDto.builder()
+                .title(resultDto.getTitle())
+                .comments(resultDto.getComments())
+                .id(resultDto.getId())
+                .textContent(resultDto.getTextContent())
+                .writingTime(resultDto.getWritingTime())
+                .readingCount(resultDto.getReadingCount())
+                .writer(resultDto.getWriter())
+                .build();
     }
 }
