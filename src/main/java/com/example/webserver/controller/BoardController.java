@@ -74,8 +74,8 @@ public class BoardController {
 
     @GetMapping("/board/contain-board")
     public ResponseEntity<List<GetBoardResponseDto>> getBoardContainWriter(
-            @RequestParam("writer") String writer,
-            @RequestParam("textContent") String textContent) {
+            @RequestParam(value = "writer", required = false) String writer,
+            @RequestParam(value = "textContent", required = false) String textContent) {
         return boardService.findBoardByContaining(writer, textContent)
                 .map(resultDtos -> resultDtos.stream()
                         .map(this::convertToResponseDto)
@@ -86,8 +86,8 @@ public class BoardController {
 
     @GetMapping("/board/contain-comment")
     public ResponseEntity<List<GetBoardResponseDto>> geBoardContainComment(
-            @RequestParam("writer") String writer,
-            @RequestParam("textContent") String content) {
+            @RequestParam(value = "writer", required = false) String writer,
+            @RequestParam(value = "textContent", required = false) String content) {
         return boardService.findBoardByContainingComment(writer, content)
                 .map(resultDtos -> resultDtos.stream()
                         .map(this::convertToResponseDto)

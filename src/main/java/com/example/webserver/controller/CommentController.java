@@ -1,10 +1,6 @@
 package com.example.webserver.controller;
 
-import com.example.webserver.dto.GetBoardCriteriaRequest;
-import com.example.webserver.dto.PostCommentRequestDto;
-import com.example.webserver.dto.PostCommentResponseDto;
-import com.example.webserver.dto.PostCommentResultDto;
-import com.example.webserver.entity.BoardEntity;
+import com.example.webserver.dto.*;
 import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostCommentStatus;
 import com.example.webserver.service.CommentService;
@@ -14,9 +10,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -76,7 +72,7 @@ public class CommentController {
     }
 
     @GetMapping("/comment/advanced-search-in-board")
-    public ResponseEntity<List<CommentEntity>> getBoardAdvancedSearch(
+    public ResponseEntity<List<GetCommentResponseDto>> getBoardAdvancedSearch(
             @RequestParam String writer,
             @RequestParam String notContainWriter,
             @RequestParam LocalDateTime startDate,
@@ -84,15 +80,29 @@ public class CommentController {
             @RequestParam Integer minReads,
             @RequestParam Integer maxReads
     ) {
-        return commentService.findByComplexCriteria(GetBoardCriteriaRequest.builder()
-                        .writer(writer)
-                        .notContainWriter(notContainWriter)
-                        .startDate(startDate)
-                        .endDate(endDate)
-                        .minReads(minReads)
-                        .maxReads(maxReads)
-                        .build())
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return commentService.findByComplexCriteria(
+                        GetBoardCriteriaRequest.builder()
+                                .writer(writer)
+                                .notContainWriter(notContainWriter)
+                                .startDate(startDate)
+                                .endDate(endDate)
+                                .minReads(minReads)
+                                .maxReads(maxReads)
+                                .build())
+                .map(comments -> comments.stream()  // Optional의 map을 사용하여 List<CommentEntity>를 처리
+                        .map(this::commentToResponseDto)  // 각 CommentEntity를 GetCommentResponseDto로 변환
+                        .collect(Collectors.toList()))  // List<GetCommentResponseDto>로 수집
+                .map(ResponseEntity::ok)  // ResponseEntity.ok()로 변환
+                .orElseGet(() -> ResponseEntity.notFound().build());  // 비어 있으면 404 Not Found 반환
+    }
+
+    private GetCommentResponseDto commentToResponseDto(CommentEntity comment) {
+        return GetCommentResponseDto.builder()
+                .writer(comment.getWriter())
+                .writingTime(comment.getWritingTime())
+                .boardId(comment.getBoard().getId())
+                .id(comment.getId())
+                .textContent(comment.getTextContent())
+                .build();
     }
 }
