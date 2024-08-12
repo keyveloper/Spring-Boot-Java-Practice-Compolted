@@ -39,9 +39,10 @@ public class CommentController {
 
     @PostMapping("/comment")
     public ResponseEntity<PostCommentResponseDto> postComment(@RequestBody PostCommentRequestDto request) {
-        log.info("request: {}", request);
+        log.info("request -> {}", request.toString());
         PostCommentResultDto commentResultDto = commentService.putComment(
                 request.getBoardId(), request.getWriter(), request.getTextContent());
+        log.info("resultDto -> {}", commentResultDto.toString());
         // status별로 Response 구분
         if (commentResultDto.getPostCommentStatus() == PostCommentStatus.Ok) {
             return ResponseEntity.ok().body(

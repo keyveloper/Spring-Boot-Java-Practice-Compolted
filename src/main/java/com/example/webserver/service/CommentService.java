@@ -4,6 +4,7 @@ import com.example.webserver.dto.GetBoardCriteriaRequest;
 import com.example.webserver.dto.PostCommentResultDto;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
+import com.example.webserver.enums.PostCommentStatus;
 import com.example.webserver.repository.BoardRepository;
 import com.example.webserver.repository.CommentRepository;
 import jakarta.transaction.Transactional;
@@ -56,6 +57,7 @@ public class CommentService {
                         .commentId(comment.getId())
                         .writer(comment.getWriter())
                         .writingTime(comment.getWritingTime())
+                        .postCommentStatus(PostCommentStatus.Ok)
                         .build();
             }
         } catch (DataAccessException e) {
