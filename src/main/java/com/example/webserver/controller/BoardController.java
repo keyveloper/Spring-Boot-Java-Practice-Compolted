@@ -72,7 +72,7 @@ public class BoardController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/board/contain-board")
+    @GetMapping("/board/like")
     public ResponseEntity<List<GetBoardResponseDto>> getBoardContainWriter(
             @RequestParam(value = "writer", required = false) String writer,
             @RequestParam(value = "textContent", required = false) String textContent) {
@@ -84,7 +84,7 @@ public class BoardController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/board/contain-comment")
+    @GetMapping("/board/like-comment")
     public ResponseEntity<List<GetBoardResponseDto>> geBoardContainComment(
             @RequestParam(value = "writer", required = false) String writer,
             @RequestParam(value = "textContent", required = false) String content) {
@@ -106,6 +106,7 @@ public class BoardController {
                 .writingTime(resultDto.getWritingTime())
                 .readingCount(resultDto.getReadingCount())
                 .writer(resultDto.getWriter())
+                .comments(resultDto.getComments())
                 .build();
     }
 }
