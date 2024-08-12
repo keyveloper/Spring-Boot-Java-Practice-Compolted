@@ -70,4 +70,11 @@ public class CommentController {
             return ResponseEntity.badRequest().body("can not delete comment");
         }
     }
+
+    @GetMapping("/comment/like/{boardWriter}")
+    public ResponseEntity<List<CommentEntity>> getBoarWriterLike(String writer) {
+        return commentService.findByBoardWriterLike(writer)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

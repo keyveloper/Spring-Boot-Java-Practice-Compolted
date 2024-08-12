@@ -71,4 +71,9 @@ public class CommentService {
             throw new EmptyResultDataAccessException("Comment not found with id" + commentId, 1);
         }
     }
+
+    @Transactional
+    public Optional<List<CommentEntity>> findByBoardWriterLike(String writer) {
+        return Optional.of(commentRepository.findByBoardWriterLike(writer));
+    }
 }

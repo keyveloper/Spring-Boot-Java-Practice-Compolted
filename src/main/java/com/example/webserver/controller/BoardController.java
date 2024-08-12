@@ -72,4 +72,14 @@ public class BoardController {
                 .map(msg -> ResponseEntity.accepted().body(msg))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/board/like")
+    public ResponseEntity<List<BoardEntity>> getBoardWriterLike(
+            @RequestParam ("writer") String writer,
+            @RequestParam("textContent") String textContent) {
+        return boardService.findByLikeWriterAndText(writer, textContent)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }

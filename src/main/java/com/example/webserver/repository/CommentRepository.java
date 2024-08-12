@@ -14,3 +14,4 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
     List<CommentEntity> findByBoardWriterLike(String writer);
 }
+

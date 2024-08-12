@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,5 +88,25 @@ public class BoardService {
         } else {
             return Optional.empty();
         }
+    }
+
+    public Optional<List<BoardEntity>> findByLikeWriterAndText(String writer, String textContent) {
+        if (writer != null && textContent != null) {
+
+            List<BoardEntity> writerList = boardRepository.findByWriterLike(writer);
+            List<BoardEntity> textList = boardRepository.findByTextContentLike(textContent);
+            return Optional.of(mergedAndRemoveDuplicationLists(writerList, textList));
+        } else if (writer != null) {
+            return Optional.of(boardRepository.findByWriterLike(writer));
+        }
+        return Optional.of(boardRepository.findByTextContentLike(textContent));
+    }
+
+    private List<BoardEntity> mergedAndRemoveDuplicationLists(List<BoardEntity> list1, List<BoardEntity> list2) {
+        HashSet<BoardEntity> entitySet = new HashSet<>();
+        entitySet.addAll(list1);
+        entitySet.addAll(list2);
+
+        return new ArrayList<>(entitySet);
     }
 }
