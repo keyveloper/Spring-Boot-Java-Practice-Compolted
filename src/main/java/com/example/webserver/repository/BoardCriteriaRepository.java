@@ -1,5 +1,6 @@
 package com.example.webserver.repository;
 
+import com.example.webserver.dto.GetBoardCriteriaRequest;
 import com.example.webserver.entity.BoardEntity;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,5 @@ public interface BoardCriteriaRepository {
     List<BoardEntity> findByContainingCommentContent(String textContent);
     // find by containing comment both
     List<BoardEntity> findByContainingCommentWriterAndText(String writer, String textContent);
+
 }

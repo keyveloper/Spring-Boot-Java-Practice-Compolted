@@ -2,6 +2,7 @@ package com.example.webserver.controller;
 
 import com.example.webserver.dto.*;
 import com.example.webserver.entity.BoardEntity;
+import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostBoardStatus;
 import com.example.webserver.service.BoardService;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,8 +95,6 @@ public class BoardController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-
 
     @GetMapping()
     private GetBoardResponseDto convertToResponseDto(GetBoardResultDto resultDto) {

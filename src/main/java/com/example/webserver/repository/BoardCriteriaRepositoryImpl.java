@@ -1,5 +1,6 @@
 package com.example.webserver.repository;
 
+import com.example.webserver.dto.GetBoardCriteriaRequest;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
 import io.micrometer.observation.annotation.Observed;

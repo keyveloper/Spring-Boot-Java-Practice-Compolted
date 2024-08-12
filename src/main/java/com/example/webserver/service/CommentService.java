@@ -1,5 +1,6 @@
 package com.example.webserver.service;
 
+import com.example.webserver.dto.GetBoardCriteriaRequest;
 import com.example.webserver.dto.PostCommentResultDto;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
@@ -71,4 +72,10 @@ public class CommentService {
             throw new EmptyResultDataAccessException("Comment not found with id" + commentId, 1);
         }
     }
+
+    @Transactional
+    public Optional<List<CommentEntity>> findByComplexCriteria(GetBoardCriteriaRequest criteria) {
+        return Optional.of(commentRepository.findByComplexCriteria(criteria));
+    }
+
 }

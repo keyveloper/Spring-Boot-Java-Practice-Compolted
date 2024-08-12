@@ -1,8 +1,10 @@
 package com.example.webserver.controller;
 
+import com.example.webserver.dto.GetBoardCriteriaRequest;
 import com.example.webserver.dto.PostCommentRequestDto;
 import com.example.webserver.dto.PostCommentResponseDto;
 import com.example.webserver.dto.PostCommentResultDto;
+import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostCommentStatus;
 import com.example.webserver.service.CommentService;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -69,5 +72,26 @@ public class CommentController {
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.badRequest().body("can not delete comment");
         }
+    }
+
+    @GetMapping("/comment/advanced-search-in-board")
+    public ResponseEntity<List<CommentEntity>> getBoardAdvancedSearch(
+            @RequestParam String writer,
+            @RequestParam String notContainWriter,
+            @RequestParam LocalDateTime startDate,
+            @RequestParam LocalDateTime endDate,
+            @RequestParam Integer minReads,
+            @RequestParam Integer maxReads
+    ) {
+        return commentService.findByComplexCriteria(GetBoardCriteriaRequest.builder()
+                        .writer(writer)
+                        .notContainWriter(notContainWriter)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .minReads(minReads)
+                        .maxReads(maxReads)
+                        .build())
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.webserver.service;
 
+import com.example.webserver.dto.GetBoardCriteriaRequest;
 import com.example.webserver.dto.GetBoardResultDto;
 import com.example.webserver.dto.PostBoardResultDto;
 import com.example.webserver.entity.BoardEntity;
