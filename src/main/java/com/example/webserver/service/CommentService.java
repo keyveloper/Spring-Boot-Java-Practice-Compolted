@@ -28,7 +28,7 @@ public class CommentService {
     }
 
     public Optional<List<CommentEntity>> findAllComment(long boardId) {
-        List<CommentEntity> comments = commentRepository.findByBoardBoardId(boardId);
+        List<CommentEntity> comments = commentRepository.findByBoardId(boardId);
         return comments.isEmpty() ? Optional.empty() : Optional.of(comments);
     }
 
