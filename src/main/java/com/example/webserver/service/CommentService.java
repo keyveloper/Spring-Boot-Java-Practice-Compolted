@@ -52,6 +52,7 @@ public class CommentService {
                         .writingTime(LocalDateTime.now())
                         .textContent(textContent)
                         .build();
+                commentRepository.save(comment);
                 return PostCommentResultDto.builder()
                         .boardId(board.get().getId())
                         .commentId(comment.getId())
