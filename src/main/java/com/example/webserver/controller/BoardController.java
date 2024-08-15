@@ -1,12 +1,9 @@
 package com.example.webserver.controller;
 
-import com.example.webserver.dto.PostBoardRequestDto;
-import com.example.webserver.dto.PostBoardResponseDto;
-import com.example.webserver.dto.PostBoardResultDto;
+import com.example.webserver.dto.*;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.enums.PostBoardStatus;
 import com.example.webserver.service.BoardService;
-import com.example.webserver.service.CommentService;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,25 +11,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @AllArgsConstructor
 public class BoardController {
     private final BoardService boardService;
-    private final CommentService commentService;
 
     @GetMapping("/boardAll")
-    public ResponseEntity<List<BoardEntity>> getAllBoardEntity() {
-        return boardService.getAllBoard()
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<List<GetBoardResponseDto>> getAllBoardEntity() {
+        List<GetBoardResultDto> resultDtos = boardService.findAll();
+        return ResponseEntity.ok(resultDtos.stream()
+                .map(this::convertGetResultToResponse)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/board/{id}")
-    public ResponseEntity<BoardEntity> getBoard(@PathVariable("id") Long id) {
-        return boardService.findBoard(id)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<GetBoardResponseDto> getBoard(@PathVariable("id") Long id) {
+        Optional<GetBoardResultDto> resultDto = boardService.findById(id);
+        return resultDto.map(getBoardResultDto -> ResponseEntity.ok(convertGetResultToResponse(getBoardResultDto)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -74,12 +73,25 @@ public class BoardController {
     }
 
     @GetMapping("/board/like")
-    public ResponseEntity<List<BoardEntity>> getBoardWriterLike(
-            @RequestParam ("writer") String writer,
-            @RequestParam("textContent") String textContent) {
-        return boardService.findByLikeWriterAndText(writer, textContent)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<List<GetBoardResponseDto>> getByWriterOrContentLike(
+            @RequestParam (value = "writer", required = false) String writer,
+            @RequestParam(value = "textContent", required = false) String textContent) {
+        List<GetBoardResultDto> resultDtos = boardService.findByWriterOrContentLike(writer, textContent);
+        return ResponseEntity.ok(resultDtos.stream()
+                .map(this::convertGetResultToResponse)
+                .collect(Collectors.toList()));
+    }
+
+    private GetBoardResponseDto convertGetResultToResponse(GetBoardResultDto resultDto) {
+        return GetBoardResponseDto.builder()
+                .id(resultDto.getId())
+                .title(resultDto.getTitle())
+                .writer(resultDto.getWriter())
+                .writingTime(resultDto.getWritingTime())
+                .readingCount(resultDto.getReadingCount())
+                .textContent(resultDto.getTextContent())
+                .comments(resultDto.getComments())
+                .build();
     }
 
 }

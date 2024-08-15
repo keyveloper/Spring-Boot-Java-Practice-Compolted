@@ -1,7 +1,10 @@
 package com.example.webserver.service;
 
+import com.example.webserver.dto.GetBoardCommentDto;
+import com.example.webserver.dto.GetBoardResultDto;
 import com.example.webserver.dto.PostBoardResultDto;
 import com.example.webserver.entity.BoardEntity;
+import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostBoardStatus;
 import com.example.webserver.repository.BoardRepository;
 import jakarta.transaction.Transactional;
@@ -9,19 +12,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public Optional<List<BoardEntity>> getAllBoard() {
+    public List<GetBoardResultDto> findAll() {
         List<BoardEntity> boards = boardRepository.findAll();
-        return boards.isEmpty() ? Optional.empty() : Optional.of(boards);
+        return boards.stream()
+                .map(this::convertToResultDto)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<GetBoardResultDto> findById(long id) {
+        return boardRepository.findById(id)
+                .map(this::convertToResultDto);
+        // 비어 있는 경우 map 메서드 적용이 안된다.
     }
 
     public PostBoardResultDto putBoard(String title, String writer, String textContent) {
@@ -51,9 +60,6 @@ public class BoardService {
                 .build();
     }
 
-    public Optional<BoardEntity> findBoard(long id) {
-        return boardRepository.findById(id);
-    }
 
     public Optional<String> deleteBoard(Long id) {
         if (boardRepository.existsById(id)) {
@@ -90,23 +96,44 @@ public class BoardService {
         }
     }
 
-    public Optional<List<BoardEntity>> findByLikeWriterAndText(String writer, String textContent) {
+    public List<GetBoardResultDto> findByWriterOrContentLike(String writer, String textContent) {
         if (writer != null && textContent != null) {
-
-            List<BoardEntity> writerList = boardRepository.findByWriterLike(writer);
-            List<BoardEntity> textList = boardRepository.findByTextContentLike(textContent);
-            return Optional.of(mergedAndRemoveDuplicationLists(writerList, textList));
+            return boardRepository.findByWriterAndTextContentLike(writer, textContent).stream()
+                    .map(this::convertToResultDto)
+                    .collect(Collectors.toList());
         } else if (writer != null) {
-            return Optional.of(boardRepository.findByWriterLike(writer));
+            return boardRepository.findByWriterLike(writer).stream()
+                    .map(this::convertToResultDto)
+                    .collect(Collectors.toList());
+        } else if (textContent != null) {
+            return boardRepository.findByWriterLike(textContent).stream()
+                    .map(this::convertToResultDto)
+                    .collect(Collectors.toList());
         }
-        return Optional.of(boardRepository.findByTextContentLike(textContent));
+        return Collections.emptyList();
     }
 
-    private List<BoardEntity> mergedAndRemoveDuplicationLists(List<BoardEntity> list1, List<BoardEntity> list2) {
-        HashSet<BoardEntity> entitySet = new HashSet<>();
-        entitySet.addAll(list1);
-        entitySet.addAll(list2);
+    private GetBoardCommentDto convertCommentToDto(CommentEntity comment) {
+        return GetBoardCommentDto.builder()
+                .id(comment.getId())
+                .writer(comment.getWriter())
+                .writingTime(comment.getWritingTime())
+                .textContent(comment.getTextContent())
+                .build();
+    }
 
-        return new ArrayList<>(entitySet);
+    private GetBoardResultDto convertToResultDto(BoardEntity board) {
+        return GetBoardResultDto.builder()
+                .id(board.getId())
+                .title(board.getTitle())
+                .writer(board.getWriter())
+                .writingTime(board.getWritingTime())
+                .readingCount(board.getReadingCount())
+                .textContent(board.getTextContent())
+                .comments(board.getComments().
+                        stream()
+                        .map(this::convertCommentToDto)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

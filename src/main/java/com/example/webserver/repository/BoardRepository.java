@@ -9,5 +9,5 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     List<BoardEntity> findByWriterLike(String writer);
     List<BoardEntity> findByTextContentLike(String textContent);
-
+    List<BoardEntity> findByWriterAndTextContentLike(String writer, String textContent);
 }
