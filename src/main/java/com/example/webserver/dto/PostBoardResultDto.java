@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class PostBoardResultDto {
-    private PostBoardStatus postBoardStatus;
-    private long id;
-    private String writer;
-    private LocalDateTime writingTime;
+    private final PostBoardStatus postBoardStatus;
+    private final long id;
+    private final String writer;
+    private final LocalDateTime writingTime;
 }

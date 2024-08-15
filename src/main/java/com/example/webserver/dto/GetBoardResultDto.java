@@ -10,18 +10,17 @@ import java.util.List;
 @RequiredArgsConstructor
 
 public class GetBoardResultDto {
-    private long id;
+    private final long id;
 
-    private String title;
+    private final String title;
 
-    private String writer;
+    private final String writer;
 
-    private LocalDateTime writingTime;
+    private final LocalDateTime writingTime;
 
-    private Integer readingCount;
+    private final Integer readingCount;
 
-    private String textContent;
+    private final String textContent;
 
-    @Setter
-    private List<GetBoardCommentDto> comments;
+    private final List<GetBoardCommentDto> comments;
 }

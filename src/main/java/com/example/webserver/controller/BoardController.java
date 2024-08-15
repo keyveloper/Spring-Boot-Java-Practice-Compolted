@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class BoardController {
     private final BoardService boardService;
 
-    @GetMapping("/boardAll")
+    @GetMapping("/boards")
     public ResponseEntity<List<GetBoardResponseDto>> getAllBoardEntity() {
         List<GetBoardResultDto> resultDtos = boardService.findAll();
         return ResponseEntity.ok(resultDtos.stream()

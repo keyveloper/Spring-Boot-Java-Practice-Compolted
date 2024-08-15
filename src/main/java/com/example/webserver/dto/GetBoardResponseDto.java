@@ -9,23 +9,22 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Builder
 @Getter
 @RequiredArgsConstructor
 public class GetBoardResponseDto {
-    private long id;
+    private final long id;
 
-    private String title;
+    private final String title;
 
-    private String writer;
+    private final String writer;
 
-    private LocalDateTime writingTime;
+    private final LocalDateTime writingTime;
 
-    private Integer readingCount;
+    private final Integer readingCount;
 
-    private String textContent;
+    private final String textContent;
 
-    private List<GetBoardCommentDto> comments;
+    private final List<GetBoardCommentDto> comments;
 }

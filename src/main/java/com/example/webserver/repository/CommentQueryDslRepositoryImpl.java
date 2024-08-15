@@ -4,14 +4,15 @@ import com.example.webserver.dto.CustomCriteria;
 import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.entity.QBoardEntity;
 import com.example.webserver.entity.QCommentEntity;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
 public class CommentQueryDslRepositoryImpl implements CommentQueryDslRepository {
     private final JPAQueryFactory queryFactory;
@@ -28,7 +29,8 @@ public class CommentQueryDslRepositoryImpl implements CommentQueryDslRepository 
                         .and(board.writer.notLike(customCriteria.getNotContainWriter()))
                         .and(board.writingTime.between(customCriteria.getStartDate(), customCriteria.getEndDate()))
                         .and(board.readingCount.gt(customCriteria.getMinReads())
-                                .or(board.readingCount.lt(customCriteria.getMaxReads()))))
+                                .or(board.readingCount.lt(customCriteria.getMaxReads())))
+                        .and(comment.isNotNull()))
                 .fetch();
     }
 }

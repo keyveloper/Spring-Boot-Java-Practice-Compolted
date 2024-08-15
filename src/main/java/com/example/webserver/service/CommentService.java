@@ -5,14 +5,17 @@ import com.example.webserver.dto.GetCommentResultDto;
 import com.example.webserver.dto.PostCommentResultDto;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
+import com.example.webserver.enums.PostCommentStatus;
 import com.example.webserver.repository.BoardRepository;
 import com.example.webserver.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import javax.xml.stream.events.Comment;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
@@ -39,6 +43,7 @@ public class CommentService {
             Optional<BoardEntity> board = boardRepository.findById(boardId);
             if (board.isEmpty()) {
                 return PostCommentResultDto.builder()
+                        .postCommentStatus(PostCommentStatus.Failed)
                         .boardId(-1)
                         .commentId(-1)
                         .writer(null)
@@ -51,7 +56,9 @@ public class CommentService {
                         .writingTime(LocalDateTime.now())
                         .textContent(textContent)
                         .build();
+                commentRepository.save(comment);
                 return PostCommentResultDto.builder()
+                        .postCommentStatus(PostCommentStatus.Ok)
                         .boardId(board.get().getId())
                         .commentId(comment.getId())
                         .writer(comment.getWriter())
@@ -83,6 +90,8 @@ public class CommentService {
 
     @Transactional
     public List<GetCommentResultDto> findByCustomCriteria(CustomCriteria customCriteria) {
+        List<CommentEntity> result = commentRepository.findByCustomCriteria(customCriteria);
+        log.info("result -> {}", result.toString());
         return commentRepository.findByCustomCriteria(customCriteria)
                 .stream()
                 .map(this::convertToGetCommentResultDto)

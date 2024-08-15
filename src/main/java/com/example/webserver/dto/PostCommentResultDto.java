@@ -4,16 +4,17 @@ import com.example.webserver.enums.PostCommentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PostCommentResultDto {
-    PostCommentStatus postCommentStatus;
-    long boardId;
-    long commentId;
-    String writer;
-    LocalDateTime writingTime;
+    private final PostCommentStatus postCommentStatus;
+    private final long boardId;
+    private final long commentId;
+    private final String writer;
+    private final LocalDateTime writingTime;
 }

@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class GetBoardCommentDto {
-    private long id;
+    private final long id;
 
-    private String writer;
+    private final String writer;
 
-    private LocalDateTime writingTime;
+    private final LocalDateTime writingTime;
 
-    private String textContent;
+    private final String textContent;
 }
