@@ -15,5 +15,5 @@ public class GetCommentResultDto {
     private final long boardId;
     private final String writer;
     private final LocalDateTime writingTime;
-    private final String textContent;}
+    private final String textContent;
 }

@@ -89,7 +89,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    private GetCommentResultDto convertToGetCommentResultDto(CommentEntity comment, ) {
+    private GetCommentResultDto convertToGetCommentResultDto(CommentEntity comment) {
         return GetCommentResultDto.builder()
                 .id(comment.getId())
                 .boardId(comment.getBoard().getId())

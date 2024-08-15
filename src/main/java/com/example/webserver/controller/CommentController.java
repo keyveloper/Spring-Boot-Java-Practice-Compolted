@@ -1,17 +1,14 @@
 package com.example.webserver.controller;
 
 import com.example.webserver.dto.*;
-import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostCommentStatus;
 import com.example.webserver.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,8 +65,8 @@ public class CommentController {
     }
 
     @GetMapping("/comments/like/{boardWriter}")
-    public ResponseEntity<List<GetCommentResponseDto>> getByBoarWriterLike(String writer) {
-        List<GetCommentResultDto> resultDtos = commentService.findByBoardWriterLike(writer);
+    public ResponseEntity<List<GetCommentResponseDto>> getByBoarWriterLike(@PathVariable String boardWriter) {
+        List<GetCommentResultDto> resultDtos = commentService.findByBoardWriterLike(boardWriter);
         return ResponseEntity.ok(resultDtos
                 .stream()
                 .map(this::convertGetResultToGetResponse)
@@ -98,7 +95,7 @@ public class CommentController {
         return ResponseEntity.ok(resultDtos
                 .stream()
                 .map(this::convertGetResultToGetResponse)
-                .collect(Collectors.toList));
+                .collect(Collectors.toList()));
     }
 
     private GetCommentResponseDto convertGetResultToGetResponse(GetCommentResultDto resultDto) {

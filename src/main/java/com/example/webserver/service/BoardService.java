@@ -113,6 +113,13 @@ public class BoardService {
         return Collections.emptyList();
     }
 
+    public List<GetBoardResultDto> findByWriterLikeDsl(String writer) {
+        return boardRepository.findByWriterLikeDsl(writer)
+                .stream()
+                .map(this::convertToResultDto)
+                .collect(Collectors.toList());
+    }
+
     private GetBoardCommentDto convertCommentToDto(CommentEntity comment) {
         return GetBoardCommentDto.builder()
                 .id(comment.getId())

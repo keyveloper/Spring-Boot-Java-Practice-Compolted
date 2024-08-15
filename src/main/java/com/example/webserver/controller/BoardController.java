@@ -72,12 +72,23 @@ public class BoardController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/board/like")
+    @GetMapping("/boards/like")
     public ResponseEntity<List<GetBoardResponseDto>> getByWriterOrContentLike(
             @RequestParam (value = "writer", required = false) String writer,
             @RequestParam(value = "textContent", required = false) String textContent) {
         List<GetBoardResultDto> resultDtos = boardService.findByWriterOrContentLike(writer, textContent);
         return ResponseEntity.ok(resultDtos.stream()
+                .map(this::convertGetResultToResponse)
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/boards/dsl/like")
+    public ResponseEntity<List<GetBoardResponseDto>> getByWriterLikeDsl(
+            @RequestParam String writer
+    ) {
+        List<GetBoardResultDto> resultDtos = boardService.findByWriterLikeDsl(writer);
+        return ResponseEntity.ok(resultDtos
+                .stream()
                 .map(this::convertGetResultToResponse)
                 .collect(Collectors.toList()));
     }
