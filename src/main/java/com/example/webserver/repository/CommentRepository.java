@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
+public interface CommentRepository extends JpaRepository<CommentEntity, Long>, CommentQueryDslRepository {
     List<CommentEntity> findByBoardId(long bardId);
 
     List<CommentEntity> findByBoardWriterLike(String writer);

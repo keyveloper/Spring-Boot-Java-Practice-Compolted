@@ -1,5 +1,7 @@
 package com.example.webserver.service;
 
+import com.example.webserver.dto.CustomCriteria;
+import com.example.webserver.dto.GetCommentResultDto;
 import com.example.webserver.dto.PostCommentResultDto;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +24,14 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
-    public Optional<CommentEntity> findCommentById(long id) {
-        CommentEntity comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("invalid comment id: " + id));
-        return Optional.of(comment);
+
+    public List<GetCommentResultDto> findByBoardId(long boardId) {
+        return commentRepository.findByBoardId(boardId)
+                .stream()
+                .map(this::convertToGetCommentResultDto)
+                .collect(Collectors.toList());
     }
 
-    public Optional<List<CommentEntity>> findAllComment(long boardId) {
-        List<CommentEntity> comments = commentRepository.findByBoardId(boardId);
-        return comments.isEmpty() ? Optional.empty() : Optional.of(comments);
-    }
 
     @Transactional
     public PostCommentResultDto putComment(long boardId, String writer, String textContent) {
@@ -73,7 +74,28 @@ public class CommentService {
     }
 
     @Transactional
-    public Optional<List<CommentEntity>> findByBoardWriterLike(String writer) {
-        return Optional.of(commentRepository.findByBoardWriterLike(writer));
+    public List<GetCommentResultDto> findByBoardWriterLike(String writer) {
+        return commentRepository.findByBoardWriterLike(writer)
+                .stream()
+                .map(this::convertToGetCommentResultDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<GetCommentResultDto> findByCustomCriteria(CustomCriteria customCriteria) {
+        return commentRepository.findByCustomCriteria(customCriteria)
+                .stream()
+                .map(this::convertToGetCommentResultDto)
+                .collect(Collectors.toList());
+    }
+
+    private GetCommentResultDto convertToGetCommentResultDto(CommentEntity comment, ) {
+        return GetCommentResultDto.builder()
+                .id(comment.getId())
+                .boardId(comment.getBoard().getId())
+                .writer(comment.getWriter())
+                .writingTime(comment.getWritingTime())
+                .textContent(comment.getTextContent())
+                .build();
     }
 }

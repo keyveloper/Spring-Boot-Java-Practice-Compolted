@@ -1,37 +1,33 @@
 package com.example.webserver.controller;
 
-import com.example.webserver.dto.PostCommentRequestDto;
-import com.example.webserver.dto.PostCommentResponseDto;
-import com.example.webserver.dto.PostCommentResultDto;
+import com.example.webserver.dto.*;
 import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostCommentStatus;
 import com.example.webserver.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class CommentController {
     private final CommentService commentService;
-    @GetMapping("/comment/{id}")
-    public ResponseEntity<CommentEntity> findCommentById(@PathVariable Long id) {
-        return commentService.findCommentById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/commentAll/{boardId}")
-    public ResponseEntity<List<CommentEntity>> findAllComment(@PathVariable Long boardId) {
-        return commentService.findAllComment(boardId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/comment/{boardId}")
+    public ResponseEntity<List<GetCommentResponseDto>> findByBoardId(@PathVariable Long boardId) {
+        List<GetCommentResultDto> resultDtos = commentService.findByBoardId(boardId);
+        return ResponseEntity.ok(resultDtos
+                .stream()
+                .map(this::convertGetResultToGetResponse)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/comment")
@@ -71,10 +67,47 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/comment/like/{boardWriter}")
-    public ResponseEntity<List<CommentEntity>> getBoarWriterLike(String writer) {
-        return commentService.findByBoardWriterLike(writer)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/comments/like/{boardWriter}")
+    public ResponseEntity<List<GetCommentResponseDto>> getByBoarWriterLike(String writer) {
+        List<GetCommentResultDto> resultDtos = commentService.findByBoardWriterLike(writer);
+        return ResponseEntity.ok(resultDtos
+                .stream()
+                .map(this::convertGetResultToGetResponse)
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/comments/advanced-search-in-board")
+    public ResponseEntity<List<GetCommentResponseDto>> getByAdvancedSearchInBoard(
+            @RequestParam String writer,
+            @RequestParam String notContainWriter,
+            @RequestParam LocalDateTime startDate,
+            @RequestParam LocalDateTime endDate,
+            @RequestParam Integer maxReads,
+            @RequestParam Integer minReads
+            ) {
+        List<GetCommentResultDto> resultDtos = commentService.findByCustomCriteria(
+                CustomCriteria.builder()
+                        .writer(writer)
+                        .notContainWriter(notContainWriter)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .maxReads(maxReads)
+                        .minReads(minReads)
+                        .build()
+        );
+        return ResponseEntity.ok(resultDtos
+                .stream()
+                .map(this::convertGetResultToGetResponse)
+                .collect(Collectors.toList));
+    }
+
+    private GetCommentResponseDto convertGetResultToGetResponse(GetCommentResultDto resultDto) {
+        return GetCommentResponseDto.builder()
+                .id(resultDto.getId())
+                .boardId(resultDto.getBoardId())
+                .writer(resultDto.getWriter())
+                .writingTime(resultDto.getWritingTime())
+                .textContent(resultDto.getTextContent())
+                .build();
     }
 }
