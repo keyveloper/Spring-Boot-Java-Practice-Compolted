@@ -7,6 +7,7 @@ import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostBoardStatus;
 import com.example.webserver.repository.BoardRepository;
+import com.google.common.base.Function;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final Function<BoardEntity, GetBoardResultDto> boardToResultDto = this::convertToResultDto;
+    private final Function<CommentEntity, GetBoardCommentDto> commentToDto = this::convertCommentToDto
 
     public List<GetBoardResultDto> findAll() {
         List<BoardEntity> boards = boardRepository.findAll();
         return boards.stream()
-                .map(this::convertToResultDto)
+                .map(boardToResultDto)
                 .collect(Collectors.toList());
     }
 
     public Optional<GetBoardResultDto> findById(long id) {
         return boardRepository.findById(id)
-                .map(this::convertToResultDto);
+                .map(boardToResultDto);
         // 비어 있는 경우 map 메서드 적용이 안된다.
     }
 
@@ -99,15 +102,15 @@ public class BoardService {
     public List<GetBoardResultDto> findByWriterOrContentLike(String writer, String textContent) {
         if (writer != null && textContent != null) {
             return boardRepository.findByWriterAndTextContentLike(writer, textContent).stream()
-                    .map(this::convertToResultDto)
+                    .map(boardToResultDto)
                     .collect(Collectors.toList());
         } else if (writer != null) {
             return boardRepository.findByWriterLike(writer).stream()
-                    .map(this::convertToResultDto)
+                    .map(boardToResultDto)
                     .collect(Collectors.toList());
         } else if (textContent != null) {
             return boardRepository.findByWriterLike(textContent).stream()
-                    .map(this::convertToResultDto)
+                    .map(boardToResultDto)
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
@@ -116,7 +119,7 @@ public class BoardService {
     public List<GetBoardResultDto> findByWriterLikeDsl(String writer) {
         return boardRepository.findByWriterLikeDsl(writer)
                 .stream()
-                .map(this::convertToResultDto)
+                .map(boardToResultDto)
                 .collect(Collectors.toList());
     }
 
@@ -139,7 +142,7 @@ public class BoardService {
                 .textContent(board.getTextContent())
                 .comments(board.getComments().
                         stream()
-                        .map(this::convertCommentToDto)
+                        .map(commentToDto)
                         .collect(Collectors.toList()))
                 .build();
     }
