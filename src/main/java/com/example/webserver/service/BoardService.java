@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final Function<BoardEntity, GetBoardResultDto> boardToResultDto = this::convertToResultDto;
-    private final Function<CommentEntity, GetBoardCommentDto> commentToDto = this::convertCommentToDto
+    private final Function<CommentEntity, GetBoardCommentDto> commentToDto = this::convertCommentToDto;
 
     public List<GetBoardResultDto> findAll() {
         List<BoardEntity> boards = boardRepository.findAll();
