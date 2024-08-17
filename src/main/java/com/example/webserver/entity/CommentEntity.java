@@ -1,4 +1,4 @@
-package com.example.webserver;
+package com.example.webserver.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -13,19 +13,19 @@ import java.time.LocalDateTime;
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="comment_id")
+    @Column(name="id")
     private long commentId;
 
     @ManyToOne
-    @JoinColumn(name="comment_board_id")
+    @JoinColumn(name="board_id")
     private BoardEntity board;
 
-    @Column(name="comment_writer")
-    private String commentWriter;
+    @Column(name="writer")
+    private String Writer;
 
-    @Column(name="comment_date")
-    private LocalDateTime commentDate;
+    @Column(name="writing_time")
+    private LocalDateTime writingTime;
 
-    @Column(name="comment_content")
-    private String commentContent;
+    @Column(name="text_content")
+    private String textContent;
 }

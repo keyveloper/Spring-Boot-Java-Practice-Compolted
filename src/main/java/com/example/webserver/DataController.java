@@ -1,5 +1,8 @@
 package com.example.webserver;
 
+import com.example.webserver.entity.BoardEntity;
+import com.example.webserver.repository.BoardRepositoryImpl;
+import com.example.webserver.repository.CommentRepositoryImpl;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
