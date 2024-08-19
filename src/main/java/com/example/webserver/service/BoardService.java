@@ -23,6 +23,7 @@ public class BoardService {
     private final Function<BoardEntity, GetBoardResultDto> boardToResultDto = this::convertToResultDto;
     private final Function<CommentEntity, GetBoardCommentDto> commentToDto = this::convertCommentToDto;
 
+    @Transactional
     public List<GetBoardResultDto> findAll() {
         List<BoardEntity> boards = boardRepository.findAll();
         return boards.stream()
@@ -30,6 +31,7 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Optional<GetBoardResultDto> findById(long id) {
         return boardRepository.findById(id)
                 .map(boardToResultDto);
@@ -116,6 +118,7 @@ public class BoardService {
         return Collections.emptyList();
     }
 
+    @Transactional
     public List<GetBoardResultDto> findByWriterLikeDsl(String writer) {
         return boardRepository.findByWriterLikeDsl(writer)
                 .stream()

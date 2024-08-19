@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommentController {
     private final CommentService commentService;
-    @GetMapping("/comment/{boardId}")
+    @GetMapping("/comments/{boardId}")
     public ResponseEntity<List<GetCommentResponseDto>> findByBoardId(@PathVariable Long boardId) {
         List<GetCommentResultDto> resultDtos = commentService.findByBoardId(boardId);
         return ResponseEntity.ok(resultDtos
