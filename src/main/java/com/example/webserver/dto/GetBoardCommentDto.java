@@ -19,5 +19,7 @@ public class GetBoardCommentDto {
 
     private final LocalDateTime writingTime;
 
+    private final LocalDateTime lastModifiedTime;
+
     private final String textContent;
 }

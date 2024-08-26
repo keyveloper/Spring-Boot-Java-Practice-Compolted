@@ -1,8 +1,8 @@
 package com.example.webserver.controller;
 
 import com.example.webserver.dto.*;
-import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.enums.PostBoardStatus;
+import com.example.webserver.enums.UpdateStatus;
 import com.example.webserver.service.BoardService;
 import lombok.AllArgsConstructor;
 
@@ -72,6 +72,28 @@ public class BoardController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // update
+    @PostMapping("/board/update")
+    public ResponseEntity<String> updateBoardById(
+            @RequestParam long id,
+            @RequestParam(required = false) String textContent,
+            @RequestParam(required = false) String writer,
+            @RequestParam(required = false) String title
+    ) {
+        UpdateResultDto resultDto = boardService.updateBoard(UpdateRequestDto.builder()
+                .id(id)
+                .textContent(textContent)
+                .writer(writer)
+                .title(title)
+                .build());
+
+        if (resultDto.getUpdateStatus() == UpdateStatus.Ok) {
+            return ResponseEntity.ok().body(resultDto.getUpdateStatus().getMessage());
+        } else {
+            return ResponseEntity.badRequest().body(resultDto.getUpdateStatus().getMessage());
+        }
+    }
+
     @GetMapping("/boards/like")
     public ResponseEntity<List<GetBoardResponseDto>> getByWriterOrContentLike(
             @RequestParam (value = "writer", required = false) String writer,
@@ -99,6 +121,7 @@ public class BoardController {
                 .title(resultDto.getTitle())
                 .writer(resultDto.getWriter())
                 .writingTime(resultDto.getWritingTime())
+                .lastModifiedTime(resultDto.getLastModifiedTime())
                 .readingCount(resultDto.getReadingCount())
                 .textContent(resultDto.getTextContent())
                 .comments(resultDto.getComments())

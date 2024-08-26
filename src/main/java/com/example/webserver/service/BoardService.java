@@ -1,11 +1,10 @@
 package com.example.webserver.service;
 
-import com.example.webserver.dto.GetBoardCommentDto;
-import com.example.webserver.dto.GetBoardResultDto;
-import com.example.webserver.dto.PostBoardResultDto;
+import com.example.webserver.dto.*;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostBoardStatus;
+import com.example.webserver.enums.UpdateStatus;
 import com.example.webserver.repository.BoardRepository;
 import com.google.common.base.Function;
 import jakarta.transaction.Transactional;
@@ -76,16 +75,32 @@ public class BoardService {
     }
 
     @Transactional
-    public Optional<String> updateBoard(long id, String content) {
-        Optional<BoardEntity> boardOpt = boardRepository.findById(id);
+    public UpdateResultDto updateBoard(UpdateRequestDto request) {
+        Optional<BoardEntity> boardOpt = boardRepository.findById(request.getId());
         if (boardOpt.isPresent()) {
             BoardEntity board = boardOpt.get();
-            board.setTextContent(content);
+            if (request.getWriter() != null) {
+                board.setWriter(request.getWriter());
+            }
+
+            if (request.getTitle() != null) {
+                board.setTitle(request.getTitle());
+            }
+
+            if (request.getTextContent() != null) {
+                board.setTextContent(request.getTextContent());
+            }
+
             boardRepository.save(board);
-            return Optional.of("new content updated successfully " + id);
-        } else {
-            return Optional.empty();
+            return UpdateResultDto.builder()
+                    .updateStatus(UpdateStatus.Ok)
+                    .id(request.getId())
+                    .build();
         }
+        return UpdateResultDto.builder()
+                .updateStatus(UpdateStatus.Failed)
+                .id(request.getId())
+                .build();
     }
 
     @Transactional
@@ -131,6 +146,7 @@ public class BoardService {
                 .id(comment.getId())
                 .writer(comment.getWriter())
                 .writingTime(comment.getWritingTime())
+                .lastModifiedTime(comment.getLastModifiedTime())
                 .textContent(comment.getTextContent())
                 .build();
     }
@@ -141,6 +157,7 @@ public class BoardService {
                 .title(board.getTitle())
                 .writer(board.getWriter())
                 .writingTime(board.getWritingTime())
+                .lastModifiedTime(board.getLastModifiedTime())
                 .readingCount(board.getReadingCount())
                 .textContent(board.getTextContent())
                 .comments(board.getComments().

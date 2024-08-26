@@ -1,11 +1,11 @@
 package com.example.webserver.service;
 
-import com.example.webserver.dto.CustomCriteria;
-import com.example.webserver.dto.GetCommentResultDto;
-import com.example.webserver.dto.PostCommentResultDto;
+import com.example.webserver.dto.*;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.CommentEntity;
+import com.example.webserver.entity.QCommentEntity;
 import com.example.webserver.enums.PostCommentStatus;
+import com.example.webserver.enums.UpdateStatus;
 import com.example.webserver.repository.BoardRepository;
 import com.example.webserver.repository.CommentRepository;
 import jakarta.transaction.Transactional;
@@ -34,6 +34,11 @@ public class CommentService {
                 .stream()
                 .map(this::convertToGetCommentResultDto)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<GetCommentResultDto> findById(long id) {
+        Optional<CommentEntity> commentOpt = commentRepository.findById(id);
+        return commentOpt.map(this::convertToGetCommentResultDto);
     }
 
 
@@ -80,6 +85,32 @@ public class CommentService {
         }
     }
 
+    // update
+    @Transactional
+    public UpdateResultDto updateComment(UpdateRequestDto request) {
+        Optional<CommentEntity> commentOpt = commentRepository.findById(request.getId());
+        if (commentOpt.isPresent()) {
+            CommentEntity comment= commentOpt.get();
+            if (request.getWriter() != null) {
+                comment.setWriter(request.getWriter());
+            }
+
+            if (request.getTextContent() != null) {
+                comment.setTextContent(request.getTextContent());
+            }
+
+            commentRepository.save(comment);
+            return UpdateResultDto.builder()
+                    .updateStatus(UpdateStatus.Ok)
+                    .id(request.getId())
+                    .build();
+        }
+        return UpdateResultDto.builder()
+                .updateStatus(UpdateStatus.Failed)
+                .id(request.getId())
+                .build();
+    }
+
     @Transactional
     public List<GetCommentResultDto> findByBoardWriterLike(String writer) {
         return commentRepository.findByBoardWriterLike(writer)
@@ -104,6 +135,7 @@ public class CommentService {
                 .boardId(comment.getBoard().getId())
                 .writer(comment.getWriter())
                 .writingTime(comment.getWritingTime())
+                .lastModifiedTime(comment.getLastModifiedTime())
                 .textContent(comment.getTextContent())
                 .build();
     }

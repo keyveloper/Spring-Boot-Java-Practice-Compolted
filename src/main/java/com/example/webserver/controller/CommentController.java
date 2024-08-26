@@ -1,8 +1,11 @@
 package com.example.webserver.controller;
 
 import com.example.webserver.dto.*;
+import com.example.webserver.entity.CommentEntity;
 import com.example.webserver.enums.PostCommentStatus;
+import com.example.webserver.enums.UpdateStatus;
 import com.example.webserver.service.CommentService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,11 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Getter
 public class CommentController {
     private final CommentService commentService;
     @GetMapping("/comments/{boardId}")
@@ -25,6 +30,13 @@ public class CommentController {
                 .stream()
                 .map(this::convertGetResultToGetResponse)
                 .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/comment/{id}")
+    public ResponseEntity<GetCommentResponseDto> getById(@PathVariable Long id) {
+        Optional<GetCommentResultDto> resultDto = commentService.findById(id);
+        return resultDto.map(getBoardResultDto -> ResponseEntity.ok(convertGetResultToGetResponse(getBoardResultDto)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/comment")
@@ -62,6 +74,26 @@ public class CommentController {
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.badRequest().body("can not delete comment");
         }
+    }
+
+    //update
+    @PostMapping("/comment/update")
+    public ResponseEntity<String> updateComment(
+            @RequestParam long id,
+            @RequestParam String textContent,
+            @RequestParam String writer
+    ) {
+        UpdateResultDto resultDto = commentService.updateComment(
+                UpdateRequestDto.builder()
+                        .id(id)
+                        .textContent(textContent)
+                        .writer(writer)
+                        .build()
+        );
+        if (resultDto.getUpdateStatus() == UpdateStatus.Ok) {
+            return ResponseEntity.ok().body(resultDto.getUpdateStatus().getMessage());
+        }
+        return ResponseEntity.badRequest().body(resultDto.getUpdateStatus().getMessage());
     }
 
     @GetMapping("/comments/like/{boardWriter}")
@@ -104,6 +136,7 @@ public class CommentController {
                 .boardId(resultDto.getBoardId())
                 .writer(resultDto.getWriter())
                 .writingTime(resultDto.getWritingTime())
+                .lastModifiedTime(resultDto.getLastModifiedTime())
                 .textContent(resultDto.getTextContent())
                 .build();
     }

@@ -2,27 +2,29 @@ package com.example.webserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @Slf4j
 @Entity
 @Table(name = "boards")
+@Data
 @Builder
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
-@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private long id;
+    private final long id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -30,8 +32,13 @@ public class BoardEntity {
     @Column(name = "writer", nullable = false)
     private String writer;
 
+    @CreatedDate
     @Column(name = "writing_time", nullable = false)
-    private LocalDateTime writingTime;
+    private final LocalDateTime writingTime;
+
+    @LastModifiedDate
+    @Column(name = "last_modified_time", nullable = false)
+    private LocalDateTime lastModifiedTime;
 
     @Column(name = "reading_count", nullable = false)
     private Integer readingCount;

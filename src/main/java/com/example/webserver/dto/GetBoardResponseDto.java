@@ -22,6 +22,8 @@ public class GetBoardResponseDto {
 
     private final LocalDateTime writingTime;
 
+    private final LocalDateTime lastModifiedTime;
+
     private final Integer readingCount;
 
     private final String textContent;

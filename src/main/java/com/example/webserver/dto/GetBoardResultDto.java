@@ -8,7 +8,6 @@ import java.util.List;
 @Builder
 @Getter
 @RequiredArgsConstructor
-
 public class GetBoardResultDto {
     private final long id;
 
@@ -17,6 +16,8 @@ public class GetBoardResultDto {
     private final String writer;
 
     private final LocalDateTime writingTime;
+
+    private final LocalDateTime lastModifiedTime;
 
     private final Integer readingCount;
 

@@ -1,8 +1,10 @@
 package com.example.webserver.repository;
 
+import com.example.webserver.dto.UpdateRequestDto;
 import com.example.webserver.entity.BoardEntity;
 import com.example.webserver.entity.QBoardEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
